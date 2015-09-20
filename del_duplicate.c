@@ -21,7 +21,7 @@ LinkList Creat_LinkList()
     head->next = NULL;
     while(1)
     {
-        printf("input No.%d(end -1)", i+1);
+        printf("input No.%d(end -1)", (i++) + 1);
         scanf("%d", &t);
         if(t != -1)
         {
