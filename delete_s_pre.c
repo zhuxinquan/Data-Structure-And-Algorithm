@@ -15,7 +15,7 @@ typedef struct node{
 
 LinkList Creat_LinkList()
 {
-    int i, t;
+    int i = 0, t;
     LinkList head, tail, p;
     head = tail = (LinkList)malloc(sizeof(Node));
     head->next = NULL;
@@ -76,10 +76,33 @@ int main(void)
 {
     LinkList head;
     Node * s;
+    int t, flag = 1;
     head = Creat_LinkList();
-    s = head->next->next->next->next->next;     //s为指向链表中任意节点
-    printf("s节点的数据是：%d\n", s->data);
-    print_list(s);
+    printf("创建的链表为:\n");
+    print_list(head->next);
+    printf("请输入要删除哪个节点的前驱节点：");
+    scanf("%d", &t);
+    if(head->next->data == t){
+        s = head->next;
+    }
+    else{
+        s = head ->next->next;
+        while(1){
+            if(s == head->next)
+            {
+                printf("节点未找到\n");
+                exit(1);
+            }
+            else if(s->data == t)
+            {
+                break;
+            }
+            else
+            {
+                s = s->next;
+            }
+        }
+    }
     del_pre(s);
     print_list(s);
     return 0;
