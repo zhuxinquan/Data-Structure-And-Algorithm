@@ -15,7 +15,7 @@ typedef struct node{
     struct node * next;
 }Node, * LinkList;
 
-LinkList Creat_LinkList()
+LinkList Creat_LinkList(int * count)
 {
     LinkList head = (LinkList)malloc(sizeof(Node));
     head->next = NULL;
@@ -24,6 +24,7 @@ LinkList Creat_LinkList()
     printf("input and -1 is over:\n");
     scanf("%d", &x);
     while(x != -1){
+        (*count)++;
         s = (LinkList)malloc(sizeof(Node));
         s->data = x;
         s->next = NULL;
@@ -34,45 +35,84 @@ LinkList Creat_LinkList()
     return head;
 }
 
-LinkList merge_list(LinkList la, LinkList lb)
+LinkList merge_list(LinkList la, LinkList lb, int count_a, int count_b)
 {
     Node * pa, * pb, * t, * s, * merge;
     t = merge = (LinkList)malloc(sizeof(Node));
     t->next = NULL;     //t为尾指针
     pa = la->next;
     pb = lb->next;
-    while(pa && pb)
+    if(count_a <= count_b)
     {
-        s = (Node *)malloc(sizeof(Node));
-        s->data = pa->data;
-        s->next = NULL;
-        t->next = s;
-        t = s;
-        pa = pa->next;
-        s = (Node *)malloc(sizeof(Node));
-        s->data = pb->data;
-        s->next = NULL;
-        t->next = s;
-        t = s;
-        pb = pb->next;
+        while(pa && pb)
+        {
+            s = (Node *)malloc(sizeof(Node));
+            s->data = pa->data;
+            s->next = NULL;
+            t->next = s;
+            t = s;
+            pa = pa->next;
+            s = (Node *)malloc(sizeof(Node));
+            s->data = pb->data;
+            s->next = NULL;
+            t->next = s;
+            t = s;
+            pb = pb->next;
+        }
+        while(pa)
+        {
+            s = (Node *)malloc(sizeof(Node));
+            s->data = pa->data;
+            s->next = NULL;
+            t->next = s;
+            t = s;
+            pa = pa->next;
+        }
+        while(pb)
+        {
+            s = (Node *)malloc(sizeof(Node));
+            s->data = pb->data;
+            s->next = NULL;
+            t->next = s;
+            t = s;
+            pb = pb->next;
+        }
     }
-    while(pa)
+    else
     {
-        s = (Node *)malloc(sizeof(Node));
-        s->data = pa->data;
-        s->next = NULL;
-        t->next = s;
-        t = s;
-        pa = pa->next;
-    }
-    while(pb)
-    {
-        s = (Node *)malloc(sizeof(Node));
-        s->data = pb->data;
-        s->next = NULL;
-        t->next = s;
-        t = s;
-        pb = pb->next;
+        while(pa && pb)
+        {
+            s = (Node *)malloc(sizeof(Node));
+            s->data = pb->data;
+            s->next = NULL;
+            t->next = s;
+            t = s;
+            pb = pb->next;
+            s = (Node *)malloc(sizeof(Node));
+            s->data = pa->data;
+            s->next = NULL;
+            t->next = s;
+            t = s;
+            pa = pa->next;
+        }
+        while(pa)
+        {
+            s = (Node *)malloc(sizeof(Node));
+            s->data = pa->data;
+            s->next = NULL;
+            t->next = s;
+            t = s;
+            pa = pa->next;
+        }
+        while(pb)
+        {
+            s = (Node *)malloc(sizeof(Node));
+            s->data = pb->data;
+            s->next = NULL;
+            t->next = s;
+            t = s;
+            pb = pb->next;
+        }
     }
     return merge;
 }
@@ -90,14 +130,16 @@ void print_link(LinkList head)
 
 int main(void)
 {
+    int count_a, count_b;
     LinkList la, lb, merge;
-    la = Creat_LinkList();
-    lb = Creat_LinkList();
+    count_a = count_b = 0;
+    la = Creat_LinkList(&count_a);
+    lb = Creat_LinkList(&count_b);
     printf("la:");
     print_link(la);
     printf("lb:");
     print_link(lb);
-    merge = merge_list(la, lb);
+    merge = merge_list(la, lb, count_a, count_b);
     printf("merge:");
     print_link(merge);
     return 0;
