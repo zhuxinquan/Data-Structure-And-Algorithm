@@ -164,6 +164,36 @@ polyn * subtraction_polyn(polyn * pa, polyn * pb)   //多项式相减
     return pd;
 }
 
+void sort_link(polyn * head)
+{
+    int e, te;
+    int coef;
+    polyn * p, * q;
+    for(p = head->next; ; p = p->next)
+    {
+        e = p->expn;
+        for(q = p->next; ; q = q->next)
+        {
+            if(q->expn < e)
+            {
+                e = q->expn;
+                te = p->expn;
+                coef = p->coef;
+                p->expn = q->expn;
+                p->coef = q->coef;
+                q->coef = coef;
+                q->expn = te;
+            }
+            if(!q->next){
+                break;
+            }
+       }
+        if(p->next->next == NULL){
+            break;
+        }
+    }
+}
+
 int main(void)
 {
     polyn * pa, *pb, *padd, *psub;
@@ -171,6 +201,8 @@ int main(void)
     pa = Creatpolyn();
     printf("please input polynomial pb(like 1,1 and 0,0 is over ):\n");
     pb = Creatpolyn();
+    sort_link(pa);
+    sort_link(pb);
     printf("pa=");
     print_polyn(pa);
     printf("pb=");
