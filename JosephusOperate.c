@@ -138,4 +138,4 @@ void JosephusOperate(NodeType **phead, int ipassword)
     }
     *phead = NULL;
     getchar();
-}
+}	
