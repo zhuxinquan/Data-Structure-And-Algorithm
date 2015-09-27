@@ -169,6 +169,10 @@ void sort_link(polyn * head)
     int e, te;
     int coef;
     polyn * p, * q;
+    if(head->next == NULL || head->next->next == NULL)
+    {
+        return ;
+    }
     for(p = head->next; ; p = p->next)
     {
         e = p->expn;
