@@ -84,9 +84,28 @@ void print_stack(LStack * Stacktop)
     p = head->next;
     while(p)
     {
-        printf("print_stack top direction %d(%d,%d)\n", p->direction, p->seat.x, p->seat.y);
+        printf("(%d,%d)\t", p->seat.x, p->seat.y);
+        if(p->next)
+        {
+            switch(p->next->direction)
+            {
+                case 1:
+                printf("向上\n");
+                break;
+                case 2:
+                printf("向左\n");
+                break;
+                case 3:
+                printf("向下\n");
+                break;
+                case 4:
+                printf("向右\n");
+                break;
+            }
+        }
         p = p->next;
     }
+    printf("\n");
 }
 
 int Gettop(LStack *Stacktop, LStack ** p)
@@ -151,6 +170,7 @@ void path(int maze[][maxsize], LStack * Stacktop, int start_x, int start_y, int 
     int cx = start_x, cy = start_y;                             //cx, cy代表当前位置
     int direction = 1;
     p = (LStack*)malloc(sizeof(LStack));
+    push(Stacktop, cx, cy, 2);
     while(cx != end_x || cy != end_y)
     {
         Gettop(Stacktop, &p);
@@ -179,7 +199,7 @@ void path(int maze[][maxsize], LStack * Stacktop, int start_x, int start_y, int 
             cy = cy - 1;
             continue;
         }
-        else{                                               //current seat all around hinder ,pop
+        else{                                               //当当前位置四周都有阻碍时，后退一步，出栈
             pop(Stacktop, &p);
             direction = p->direction;
             if(direction == 1){
@@ -236,7 +256,7 @@ int main(void)
             printf("输入错误！\n");
     }
     path(maze, Stacktop, start_x, start_y, end_x, end_y);
-    printf("road is :\n");
+    printf("行走路线如下 :\n");
     print_stack(Stacktop);
     return 0;
 }
