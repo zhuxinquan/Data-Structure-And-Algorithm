@@ -28,10 +28,10 @@ typedef struct node{
     struct node * next;
 }LStack;
 
-void InitStack(LStack * Stacktop)
+void InitStack(LStack ** Stacktop)
 {
-    Stacktop = (LStack *)malloc(sizeof(LStack));
-    Stacktop->next = NULL;
+    *Stacktop = (LStack *)malloc(sizeof(LStack));
+    (*Stacktop)->next = NULL;
 }
 
 int Empty(LStack * Stacktop)
@@ -43,7 +43,7 @@ int Empty(LStack * Stacktop)
 
 }
 
-int push(LStack * Stacktop, LStack * p)                 //出栈操作,成功返回0,出错返回-1,p为要接受栈顶值的内存空间
+int pop(LStack * Stacktop, LStack ** p)                 //出栈操作,成功返回0,出错返回-1,p为要接受栈顶值的内存空间
 {
     if(Empty(Stacktop))
     {
@@ -51,14 +51,13 @@ int push(LStack * Stacktop, LStack * p)                 //出栈操作,成功返
     }
     else
     {
-        p = (LStack *)malloc(sizeof(LStack));
-        p = Stacktop->next;
-        Stacktop = Stacktop->next;
+        * p = Stacktop->next;
+        Stacktop->next = Stacktop->next->next;
         return 0;
     }
 }
 
-int pop(LStack * Stacktop, int x, int y, int direction)     //入栈操作，x, y, direction分别为入栈元素的位置坐标和方向
+int push(LStack * Stacktop, int x, int y, int direction)     //入栈操作，x, y, direction分别为入栈元素的位置坐标和方向
 {
     LStack * p;
     p = (LStack *)malloc(sizeof(LStack));
@@ -70,7 +69,38 @@ int pop(LStack * Stacktop, int x, int y, int direction)     //入栈操作，x, 
     return 0;
 }
 
-int Gettop(LStack *Stacktop)
+void print_stack(LStack * Stacktop)
+{
+    LStack * p, *head;
+    head = (LStack *)malloc(sizeof(LStack));
+    head->next = NULL;
+    while(Stacktop->next != NULL)
+    {
+        p = Stacktop->next;
+        Stacktop->next = p->next;
+        p->next = head->next;
+        head->next = p;
+    }
+    p = head->next;
+    while(p)
+    {
+        printf("print_stack top direction %d(%d,%d)\n", p->direction, p->seat.x, p->seat.y);
+        p = p->next;
+    }
+}
+
+int Gettop(LStack *Stacktop, LStack ** p)
+{
+    if(Empty(Stacktop))
+    {
+        return -1;
+    }
+    else
+    {
+        *p = Stacktop->next;
+        return 0;
+    }
+}
 
 void InitMaze_static_array(int maze[][maxsize])
 {
@@ -114,6 +144,104 @@ void print_maze(int maze[][maxsize])
     }
 }
 
+
+void path(int maze[][maxsize], LStack * Stacktop, int start_x, int start_y, int end_x, int end_y)
+{
+    LStack * p;                                                 //用来获得栈定内容
+    int cx = start_x, cy = start_y;                             //cx, cy代表当前位置
+    int direction = 1;
+    p = (LStack*)malloc(sizeof(LStack));
+    while(cx != end_x || cy != end_y)
+    {
+        Gettop(Stacktop, &p);
+        direction = p->direction;
+        if(maze[cx - 1][cy] == 0 && direction != 3)
+        {
+            push(Stacktop, cx - 1, cy, 1);
+            cx = cx - 1;
+            continue;
+        }
+        else if(maze[cx][cy + 1] == 0 && direction != 4)
+        {
+            push(Stacktop, cx, cy + 1, 2);
+            cy = cy + 1;
+            continue;
+        }
+        else if(maze[cx + 1][cy] == 0 && direction != 1)
+        {
+            push(Stacktop, cx + 1, cy, 3);
+            cx = cx + 1;
+            continue;
+        }
+        else if(maze[cx][cy - 1] == 0 && direction != 2)
+        {
+            push(Stacktop, cx, cy - 1, 4);
+            cy = cy - 1;
+            continue;
+        }
+        else{                                               //current seat all around hinder ,pop
+            pop(Stacktop, &p);
+            direction = p->direction;
+            if(direction == 1){
+                maze[p->seat.x][p->seat.y] = 1;
+                cx = p->seat.x + 1;
+                cy = p->seat.y;
+            }else if(direction == 2){
+                maze[p->seat.x][p->seat.y] = 1;
+                cx = p->seat.x;
+                cy = p->seat.y - 1;
+            }else if(direction == 3){
+                maze[p->seat.x][p->seat.y] = 1;
+                cx = p->seat.x - 1;
+                cy = p->seat.y;
+            }
+            else if(direction == 4){
+                maze[p->seat.x][p->seat.y] = 1;
+                cx = p->seat.x;
+                cy = p->seat.y + 1;
+            }
+        }
+    }
+}
+
+int main(void)
+{
+    int start_x, start_y, end_x, end_y;
+    LStack * Stacktop;                                  //栈顶
+    int maze[maxsize][maxsize];
+    printf("input row and line(eg: 6,8):");
+    scanf("%d,%d", &row, &line);
+    InitStack(&Stacktop);                                //初始化栈
+    InitMaze_static_array(maze);                                    //初始化迷宫
+    printf("输入的迷宫如下：\n");
+    print_maze(maze);
+    setbuf(stdin, 0);
+    while(1)
+    {
+        printf("请输入起始位置坐标(eg:  1,1 ) :\n");
+        scanf("%d,%d", &start_x, &start_y);
+        if(start_x >= 1 && start_x <= row && start_y >= 1 && start_y <= line)
+            break;
+        else
+            printf("输入错误！\n");
+    }
+    setbuf(stdin, 0);
+    while(1)
+    {
+        printf("请输入目的位置坐标(eg:  9,8 ) :\n");
+        scanf("%d,%d", &end_x, &end_y);
+        if(end_x <= row && end_x >= 1 && end_y >= 1 && end_y <= line)
+            break;
+        else
+            printf("输入错误！\n");
+    }
+    path(maze, Stacktop, start_x, start_y, end_x, end_y);
+    printf("road is :\n");
+    print_stack(Stacktop);
+    return 0;
+}
+
+
 /*void InitMaze(int *** maze)                             //初始化迷宫，申请内存空间并将迷宫围墙全部填充为障碍
 {
     int i, j;
@@ -147,47 +275,3 @@ void print_maze(int maze[][maxsize])
         }
     }
 }*/
-
-void path(int maze[][maxsize], LStack * Stacktop, int start_x, int start_y, int end_x, int end_y)
-{
-    int cx = start_x, cy = start_y;                                         //cx, cy代表当前位置
-    int direction = 1;
-    while(cx != end_x || cy != end_y)
-    {
-        if(maze[cx - 1][cy] == 0)
-        {
-        }
-    }
-}
-
-int main(void)
-{
-    int start_x, start_y, end_x, end_y;
-    LStack * Stacktop;                                  //栈顶
-    int maze[maxsize][maxsize];
-    printf("input row and line(eg: 6,8):");
-    scanf("%d,%d", &row, &line);
-    InitStack(Stacktop);                                //初始化栈
-    InitMaze_static_array(maze);                                    //初始化迷宫
-    printf("输入的迷宫如下：\n");
-    print_maze(maze);
-    while(1)
-    {
-        printf("请输入起始位置坐标(eg:  (1,1) ) :\n");
-        Scanf("(%d,%d)", &start_x, &start_y);
-        if(start_x >= 1 && start_x <= row && start_y >= 1 && start_y <= line)
-            break;
-        else
-            printf("输入错误！\n");
-    }
-    while(1)
-    {
-        printf("请输入目的位置坐标(eg:  (9,8) ) :\n");
-        scanf("(%d,%d)", &end_x, &end_y);
-        if(end_x <= row  end_x >= 1 && end_y >= 1 && end_y <= line)
-            break;
-        else
-            printf("输入错误！\n");
-    }
-    path(maze, Stacktop, start_x, start_y, end_x, end_y);
-}
