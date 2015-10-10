@@ -111,6 +111,7 @@ char compare(char a, char b)
         case '(': j = 4; break;
         case ')': j = 5; break;
         case '#': j = 6; break;
+        case  10: printf("表达式要以#结尾！！！\n");exit(1);
     }
     return pre[i][j];
 }
@@ -169,7 +170,7 @@ int EvaluateExpression()
                 pop_stack(top_optr, &operate);
                 pop_stack(top_oprd, &a);
                 pop_stack(top_oprd, &b);
-                Push_stack(top_oprd, Operation(a, operate, b));
+                Push_stack(top_oprd, Operation(b, operate, a));         //由于压栈的顺序，则应当是先出的操作数在后
                 break;
                 case '=':               //操作符'('')'紧挨，则直接去除括号
                 pop_stack(top_optr, &operate);
@@ -177,6 +178,7 @@ int EvaluateExpression()
                 break;
                 case '0':               //比较结果得出表达式错误
                 printf("input error!\n");
+                exit(1);
             }
         }
         get_stack(top_optr, &x);
@@ -199,7 +201,7 @@ int get_stack(StackType * top, int * x)
 int main(void)
 {
     int c;
-    printf("please input expression:");
+    printf("please input expression (end in #):");
     c = EvaluateExpression();
     printf("result = %d\n", c);
     getchar();
