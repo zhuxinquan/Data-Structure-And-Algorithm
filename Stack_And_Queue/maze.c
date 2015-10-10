@@ -220,6 +220,7 @@ void path(int maze[][maxsize], LStack * Stacktop, int start_x, int start_y, int 
                 cx = p->seat.x;
                 cy = p->seat.y + 1;
             }
+            free(p);
         }
     }
 }
