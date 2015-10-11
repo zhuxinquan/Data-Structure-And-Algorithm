@@ -13,15 +13,15 @@
 #define TRUE 1
 
 typedef struct stacknode{
-    int data;
+    float data;
     struct stacknode * next;
 }StackType;
 
-int get_stack(StackType *, int *);             //取栈顶元素
-int pop_stack(StackType *, int *);             //出栈
-int Push_stack(StackType *, int);       //入栈
+float get_stack(StackType *, float *);             //取栈顶元素
+float pop_stack(StackType *, float *);             //出栈
+float Push_stack(StackType *, float);       //入栈
 char compare(char, char);               //比较运算符优先级
-int Operation(int , char, int );        //实际运算函数
+float Operation(float , float, float );        //实际运算函数
 
 StackType * Init_stack()
 {
@@ -31,7 +31,7 @@ StackType * Init_stack()
     return top;
 }
 
-int Push_stack(StackType * top, int x)
+float Push_stack(StackType * top, float x)
 {
     StackType * p;
     p = (StackType *)malloc(sizeof(StackType));
@@ -44,7 +44,7 @@ int Push_stack(StackType * top, int x)
     return TRUE;
 }
 
-int pop_stack(StackType * top, int * x)
+float pop_stack(StackType * top, float * x)
 {
     StackType * p;
     if(top->next == NULL){
@@ -57,7 +57,7 @@ int pop_stack(StackType * top, int * x)
     return 0;
 }
 
-int getnext(int * n)                        //该函数返回0为数字，返回1为运算符
+float getnext(float * n)                        //该函数返回0为数字，返回1为运算符
 {
     char c;
     *n = 0;
@@ -116,13 +116,13 @@ char compare(char a, char b)
     return pre[i][j];
 }
 
-int Operation(int a, char operate, int b)           //实际操作两个数a,b的运算
+float Operation(float a, float operate, float b)           //实际操作两个数a,b的运算
 {
-    int i, j, result;
-    i = a;
-    j = b;
+    float i, j, result;
+    i = (float)a;
+    j = (float)b;
 
-    switch(operate){
+    switch((int)operate){
         case '+': result = a + b; break;
         case '-': result = a - b; break;
         case '*': result = a * b; break;
@@ -131,14 +131,14 @@ int Operation(int a, char operate, int b)           //实际操作两个数a,b�
     return result;
 }
 
-int EvaluateExpression()
+float EvaluateExpression()
 {
-    int n;
-    int c;                                  //存储输入缓存中的字符或数字
-    int flag;                               //从输入缓存中取操作符的返回值，0表示取出数字，1表示取出运算符
-    int x;                                  //取栈顶操作符
-    int operate;                            //存储要计算的操作符
-    int a, b;                               //存取要计算的操作数
+    float n;
+    float c;                                  //存储输入缓存中的字符或数字
+    float flag;                               //从输入缓存中取操作符的返回值，0表示取出数字，1表示取出运算符
+    float x;                                  //取栈顶操作符
+    float operate;                            //存储要计算的操作符
+    float a, b;                               //存取要计算的操作数
     StackType * top_oprd, * top_optr;       //top_oprd为操作数栈，top_optr为运算符栈
     
     char op[] = "+-*/()#";
@@ -150,7 +150,7 @@ int EvaluateExpression()
     flag = getnext(&c);
     
     get_stack(top_optr, &x);
-    while(c != '#' || x != '#')         //表达式的起始位置都是'#'，如果读取的新的字符和运算符都是'#'说明运算已经结束
+    while((float)c != '#' || (float)x != '#')         //表达式的起始位置都是'#'，如果读取的新的字符和运算符都是'#'说明运算已经结束
     {
         if(flag == 0)                   //返回数字
         {
@@ -160,7 +160,7 @@ int EvaluateExpression()
         else                            //返回运算符
         {
             get_stack(top_optr, &x);        //取栈顶运算符
-            switch(compare(x, c))
+            switch(compare((float)x, (float)c))
             {
                 case '<':               //栈顶操作符运算优先级低
                 Push_stack(top_optr, c);
@@ -188,7 +188,7 @@ int EvaluateExpression()
 
 }
 
-int get_stack(StackType * top, int * x)
+float get_stack(StackType * top, float * x)
 {
     if(top->next == NULL)
     {
@@ -198,11 +198,11 @@ int get_stack(StackType * top, int * x)
     return 0;
 }
 
-int main(void)
+float main(void)
 {
-    int c;
+    float c;
     printf("please input expression (end in #):");
     c = EvaluateExpression();
-    printf("result = %d\n", c);
+    printf("result = %f\n", c);
     getchar();
 }
