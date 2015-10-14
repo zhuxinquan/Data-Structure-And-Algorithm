@@ -71,10 +71,12 @@ int push(LStack * Stacktop, int x, int y, int direction)     //入栈操作，x,
 
 void print_stack(LStack * Stacktop)
 {
+    int i, j;
     LStack * p, *head;
+    int map[100][100] = {0};
     head = (LStack *)malloc(sizeof(LStack));
     head->next = NULL;
-    while(Stacktop->next != NULL)
+    while(Stacktop->next != NULL)           //等同于将栈依次输出转换为队列
     {
         p = Stacktop->next;
         Stacktop->next = p->next;
@@ -84,6 +86,7 @@ void print_stack(LStack * Stacktop)
     p = head->next;
     while(p)
     {
+        map[p->seat.x][p->seat.y] = 1;
         printf("(%d,%d)\t", p->seat.x, p->seat.y);
         if(p->next)
         {
@@ -106,6 +109,21 @@ void print_stack(LStack * Stacktop)
         p = p->next;
     }
     printf("\n");
+    printf("输出的图示如下:\n");
+    for(i = 1; i <= row; i++)
+    {
+        for(j = 1; j <= line; j++)
+        {
+            if(map[i][j] == 1)
+            {
+                printf("\033[42m * \033[0m");
+            }
+            else{
+                printf(" 1 ");
+            }
+        }
+        printf("\n");
+    }
 }
 
 int Gettop(LStack *Stacktop, LStack ** p)
