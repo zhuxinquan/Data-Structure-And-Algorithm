@@ -112,7 +112,7 @@ void magic_expalin(char str[])
     char * p = str;
     char letter, letter1;
     LQueue * queue, *queue1;
-    LetterNode * stack_top1, *stack_top2, *stack_top3;
+    LetterNode * stack_top1, *stack_top2, *stack_top3, *p1;
     queue = Init_queue();
     queue1 = Init_queue();
     stack_top1 = Init_Stack();
@@ -194,6 +194,14 @@ void magic_expalin(char str[])
     }
     printf("\n");*/
     printf("\n");
+    p1 = queue->front->next;
+    printf("翻译为字母为：\n");
+    while(p1)
+    {
+        printf(" %c", p1->letter);
+        p1 = p1->next;
+    }
+    printf("\n");
     while(!Queue_Is_Empty(queue))
     {
         out_queue(queue, &letter);
@@ -214,11 +222,42 @@ void magic_expalin(char str[])
     printf("\n");
 }
 
+void match(char str[])
+{
+    char *p, letter;
+    LetterNode * stacktop;
+    stacktop = Init_Stack();
+    p = str;
+    while(*p != 0)
+    {
+        if(*p == 40)
+        {
+            push_stack(stacktop, 40);
+        }
+        else if(*p == 41)
+        {
+            if(Stack_Is_Empty(stacktop))
+            {
+                printf("\n括号不匹配!\n");
+                exit(1);
+            }
+            pop_stack(stacktop, &letter);
+        }
+        p++;
+    }
+    if(!Stack_Is_Empty(stacktop))
+    {
+        printf("括号不匹配！\n");
+        exit(1);
+    }
+}
+
 int main(void)
 {
     char str[100] = {0};
     printf("请输入{B, A, s, a, e, t, d, z, g, x, n, h}：");
     scanf("%s", str);
+    match(str);
     magic_expalin(str);
     return 0;
 }
