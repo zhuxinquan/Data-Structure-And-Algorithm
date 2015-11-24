@@ -50,6 +50,19 @@ void CreateHuffmanTree(HuffmanTree ht, int* w, int n){
     }
 }
 
+void printTree(HuffmanTree ht, int root, int h)
+{
+    if(root == 0){
+        return ;
+    }
+    printTree(ht, ht[root].Rchild, h + 1);
+    for(int i = 0; i < h; i++){
+        printf("    ");
+    }
+    printf("%d\n", ht[root].Weight);
+    printTree(ht, ht[root].Lchild, h + 1);
+}
+
 void Select(HuffmanTree ht, int n, int * s1, int * s2)
 {
     int i, min, smin;
@@ -117,7 +130,7 @@ void CreateHuffmanCode(HuffmanTree ht, HuffmanCode hc, int n){
 int main(void)
 {
     int w[N];
-    int i, n;
+    int i, n, root, h = 0;
     char code[N];
     HuffmanTree ht;
     HuffmanCode hc;
@@ -131,7 +144,10 @@ int main(void)
     }
     CreateHuffmanTree(ht, w, n);
     CreateHuffmanCode(ht, hc, n);
-    printf("input code:");
+    root = 2 * n - 1;
+    printf("printTree :\n\n");
+    printTree(ht, root, h);
+    printf("\n\ninput code:");
     scanf("%s", code);
     for(i = 0; i <= n; i++){
         if(!strcmp(code, hc[i]))
@@ -139,6 +155,9 @@ int main(void)
             printf("transcode: %d\n", ht[i].Weight);
             break;
         }
+    }
+    if(i == n+1){
+        printf("\ntranscode failed!!\n\n");
     }
     return 0;
 }
