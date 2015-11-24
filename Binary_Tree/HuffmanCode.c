@@ -152,7 +152,7 @@ int main(void)
     for(i = 0; i <= n; i++){
         if(!strcmp(code, hc[i]))
         {
-            printf("transcode: %d\n", ht[i].Weight);
+            printf("\ntranscode: %d\n\n", ht[i].Weight);
             break;
         }
     }
