@@ -6,6 +6,8 @@
  ************************************************************************/
 
 #include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
 
 #define N 30
 #define M 2*N-1
@@ -15,9 +17,9 @@ typedef struct{
     int Parent, Lchild, Rchild;
 }HTNode, HuffmanTree[M + 1];
 
-typedef char * HuffmanCode;
+typedef char*  HuffmanCode[N];
 
-void select(HuffmanTree, int, int *, int *);
+void Select(HuffmanTree, int, int *, int *);
 
 void CreateHuffmanTree(HuffmanTree ht, int* w, int n){
     int m, i;
@@ -36,7 +38,7 @@ void CreateHuffmanTree(HuffmanTree ht, int* w, int n){
     }
     for(i = n + 1; i <= m; i++){
         int s1, s2;
-        select(ht, i-1, &s1, &s2);
+        Select(ht, i-1, &s1, &s2);
         ht[i].Weight = ht[s1].Weight+ht[s2].Weight;
         ht[i].Lchild = s1;
         ht[i].Rchild = s2;
@@ -44,11 +46,11 @@ void CreateHuffmanTree(HuffmanTree ht, int* w, int n){
         ht[s2].Parent = i;
     }
     for(i = 1; i <= m; i++){
-        printf("Weight:%d  Parent:%d  Lchild:%d  Rchild%d\n", ht[i].Weight, ht[i].Parent, ht[i].Lchild, ht[i].Rchild);
+        printf("No.%d: Weight:%d  Parent:%d  Lchild:%d  Rchild%d\n", i, ht[i].Weight, ht[i].Parent, ht[i].Lchild, ht[i].Rchild);
     }
 }
 
-void select(HuffmanTree ht, int n, int * s1, int * s2)
+void Select(HuffmanTree ht, int n, int * s1, int * s2)
 {
     int i, min, smin;
     for(i = 1; i <= n; i++){
@@ -84,12 +86,41 @@ void select(HuffmanTree ht, int n, int * s1, int * s2)
     //exit(0);
 }
 
+void CreateHuffmanCode(HuffmanTree ht, HuffmanCode hc, int n){
+    char * cd;
+    int start, i, c, p;
+    cd = (char *)malloc(n * sizeof(char));
+    cd [n - 1] = '\0';
+    for(i = 1; i <= n; i++){
+        start = n - 1;
+        c = i;
+        p = ht[i].Parent;
+        while(p != 0){
+            --start;
+            if(ht[p].Lchild == c){
+                cd[start] = '0';
+            }else{
+                cd[start] = '1';
+            }
+            c = p;
+            p = ht[p].Parent;
+        }
+        hc[i] = (char *)malloc((n - start)*sizeof(char));
+        strcpy(hc[i], &cd[start]);
+    }
+    free(cd);
+    for(i = 1; i <= n; i++){
+        printf("%d: %s\n", ht[i].Weight, hc[i]);
+    }
+}
+
 int main(void)
 {
     int w[N];
     int i, n;
+    char code[N];
     HuffmanTree ht;
-    HuffmanCode hc[N];
+    HuffmanCode hc;
     printf("input weight(end 0):");
     for(i = 1; i < N; i++){
         scanf("%d", w+i);
@@ -99,5 +130,15 @@ int main(void)
         }
     }
     CreateHuffmanTree(ht, w, n);
+    CreateHuffmanCode(ht, hc, n);
+    printf("input code:");
+    scanf("%s", code);
+    for(i = 0; i <= n; i++){
+        if(!strcmp(code, hc[i]))
+        {
+            printf("transcode: %d\n", ht[i].Weight);
+            break;
+        }
+    }
     return 0;
 }
