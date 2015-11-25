@@ -46,7 +46,7 @@ void CreateHuffmanTree(HuffmanTree ht, int* w, int n){
         ht[s2].Parent = i;
     }
     for(i = 1; i <= m; i++){
-        printf("No.%d: Weight:%d  Parent:%d  Lchild:%d  Rchild%d\n", i, ht[i].Weight, ht[i].Parent, ht[i].Lchild, ht[i].Rchild);
+        printf("No.%d: Weight:%d  Parent:%d  Lchild:%d  Rchild:%d\n", i, ht[i].Weight, ht[i].Parent, ht[i].Lchild, ht[i].Rchild);
     }
 }
 
@@ -127,6 +127,29 @@ void CreateHuffmanCode(HuffmanTree ht, HuffmanCode hc, int n){
     }
 }
 
+void transcode(HuffmanTree ht, int root, char * code, int n){
+    int i;
+    for(i = 0; i < n; i++){
+        if(ht[root].Lchild == 0){
+            break;
+            printf("not found");
+        }
+        if(code[i] == '1'){
+            root = ht[root].Rchild;
+        }else if(code[i] == '0'){
+            root = ht[root].Lchild;
+        }else{
+            printf("code error!!\n\n");
+            exit(0);
+        }
+    }
+    if(i == n){  
+        printf("transcode :%d\n", ht[root].Weight);
+    }else{
+        printf("coding not found!!\n\n");
+    }
+}
+
 int main(void)
 {
     int w[N];
@@ -149,7 +172,9 @@ int main(void)
     printTree(ht, root, h);
     printf("\n\ninput code:");
     scanf("%s", code);
-    for(i = 0; i <= n; i++){
+    n = strlen(code);
+    transcode(ht, root, code, n);
+    /*for(i = 0; i <= n; i++){
         if(!strcmp(code, hc[i]))
         {
             printf("\ntranscode: %d\n\n", ht[i].Weight);
@@ -158,6 +183,6 @@ int main(void)
     }
     if(i == n+1){
         printf("\ntranscode failed!!\n\n");
-    }
+    }*/
     return 0;
 }
