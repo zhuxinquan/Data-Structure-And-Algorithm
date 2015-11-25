@@ -52,11 +52,12 @@ void CreateHuffmanTree(HuffmanTree ht, int* w, int n){
 
 void printTree(HuffmanTree ht, int root, int h)
 {
+    int i;
     if(root == 0){
         return ;
     }
     printTree(ht, ht[root].Rchild, h + 1);
-    for(int i = 0; i < h; i++){
+    for(i = 0; i < h; i++){
         printf("    ");
     }
     printf("%d\n", ht[root].Weight);
@@ -157,7 +158,7 @@ int main(void)
     char code[N];
     HuffmanTree ht;
     HuffmanCode hc;
-    printf("input weight(end 0):");
+    printf("input weight(Separated by space and end 0):");
     for(i = 1; i < N; i++){
         scanf("%d", w+i);
         if(w[i] == 0){
