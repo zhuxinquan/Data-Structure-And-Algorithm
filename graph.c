@@ -2,7 +2,7 @@
 	> File Name: graph.c
 	> Author: zhuxinquan
 	> Mail: zhuxinquan61@gmail.com
-	> Created Time: 2015年12月06日 星期日 04时56分51秒
+	> Createed Time: 2015年12月06日 星期日 04时56分51秒
  ************************************************************************/
 
 #include<stdio.h>
@@ -10,8 +10,61 @@
 
 #define MAXVEX 20
 
+typedef struct QNode{
+    int data;
+    struct QNode * next;
+}QNode;
+
+typedef struct Queue{
+    struct QNode * front;
+    struct QNode * rear;
+}LQueue;
+
+void InitQueue(LQueue * LQ)
+{
+    LQ = (LQueue *)malloc(sizeof(LQueue));
+    QNode * p = (QNode *)malloc(sizeof(QNode));
+    p->next = NULL;
+    LQ->front = p;
+    LQ->rear = p;
+}
+
+void EnterQueue(LQueue * LQ, int v0)
+{
+    QNode * t = (QNode *)malloc(sizeof(QNode));
+    t->data = v0;
+    t->next = NULL;
+    LQ->rear->next = t;
+    LQ->rear = t;
+}
+
+int Empty(LQueue * LQ)
+{
+    if(LQ->front == LQ->rear){
+        return 1;
+    }else{
+        return 0;
+    }
+}
+
+void DeleteQueue(LQueue * LQ, int * v)
+{
+    QNode * t;
+    if(Empty(LQ)){
+        printf("LQueue empty!\n");
+        exit(0);
+    }
+    *v = LQ->front->next->data;
+    t = LQ->front->next;
+    LQ->front->next = LQ->front->next->next;
+    if(LQ->front->next == NULL){
+        LQ->rear = LQ->front;
+    }
+    free(t);
+}
+
 typedef struct ArcNode{
-    int adjvex;         //邻接点域
+    int adjvex;         //adjacency vertex
     int weight;
     struct ArcNode * next;
 }ArcNode;
@@ -29,7 +82,7 @@ typedef struct{
 
 int visited[MAXVEX] = {0};
 
-void CreatGraph(AdjList * adjacency_list)
+void CreateGraph(AdjList * adjacency_list)
 {
     int i, adjvex, weight;
     char t;
@@ -78,7 +131,7 @@ void CreatGraph(AdjList * adjacency_list)
         for(i = 1; i <= adjacency_list->vexnum; i++){
             tail = adjacency_list->vertex[i].head;
             while(1){
-                printf("input %c adjacency vertex and weight(vertex 0 is over)", adjacency_list->vertex[i].vexdata);
+                printf("input %c adjacency vertex(vertex 0 is over):", adjacency_list->vertex[i].vexdata);
                 int c;
                 do{
                     c = fgetc(stdin);
@@ -103,7 +156,7 @@ void CreatGraph(AdjList * adjacency_list)
         ArcNode * p = adjacency_list->vertex[i].head->next;
         printf("No.%d %c", i, adjacency_list->vertex[i].vexdata);
         while(p){
-            if(t == 'y'){
+            if(t == 'y' || t == 'Y'){
                 printf("->%d, %d", p->adjvex, p->weight);
             }else{
                 printf("->%d", p->adjvex);
@@ -114,9 +167,59 @@ void CreatGraph(AdjList * adjacency_list)
     }
 }
 
+int FirstAdjVex(AdjList * adjacency_list, int v0)
+{
+    return adjacency_list->vertex[v0].head->next?adjacency_list->vertex[v0].head->next->adjvex:-1;
+}
+
+int NextAdjVex(AdjList * adjacency_list, int v0, int v)
+{
+    ArcNode * temp;
+    temp = adjacency_list->vertex[v0].head->next;
+    while(temp){
+        if(temp->adjvex == v && temp->next != NULL){
+            return temp->next->adjvex;
+        }else{
+            temp = temp->next;
+        }
+    }
+    return -1;
+}
+
 void DFS(AdjList * adjacency_list, int v0)
 {
+    int first_adj_vex;
+    printf("%c", adjacency_list->vertex[v0].vexdata);
+    visited[v0] = 1;
+    first_adj_vex = FirstAdjVex(adjacency_list, v0);
+    while(first_adj_vex != -1){
+        if(!visited[first_adj_vex]){
+            DFS(adjacency_list, first_adj_vex);
+        }
+        first_adj_vex = NextAdjVex(adjacency_list, v0, first_adj_vex);
+    }
+}
 
+void BFS(AdjList * adjacency_list, int v0)
+{
+    LQueue * Q;
+    int v, w;
+    printf("%c", adjacency_list->vertex[v0].vexdata);
+    visited[v0] = 1;
+    InitQueue(Q);
+    EnterQueue(Q, v0);
+    while(!Empty(Q)){
+        DeleteQueue(Q, &v);
+        w = FirstAdjVex(adjacency_list, v);
+        while(w != -1){
+            if(!visited[w]){
+                printf("%c", adjacency_list->vertex[w].vexdata);
+                visited[w] = 1;
+                EnterQueue(Q, w);
+            }
+            w = NextAdjVex(adjacency_list, v, w);
+        }
+    }
 }
 
 void TraverseGraph(AdjList * adjacency_list)
@@ -125,17 +228,30 @@ void TraverseGraph(AdjList * adjacency_list)
     for(i = 1; i <= adjacency_list->vexnum; i++){
         visited[i] = 0;
     }
+    printf("DFS:\n");
     for(i = 1; i < adjacency_list->vexnum; i++){
         if(!visited[i]){
             DFS(adjacency_list, i);
         }
     }
+    printf("\n");
+    /*for(i = 1; i <= adjacency_list->vexnum; i++){
+        visited[i] = 0;
+    }
+    printf("BFS:\n");
+    for(i = 1; i <= adjacency_list->vexnum; i++){
+        if(!visited[i]){
+            BFS(adjacency_list, i);
+        }
+    }
+    printf("\n");*/
 }
 
 int main(void)
 {
     AdjList * adjacency_list;
     adjacency_list = (AdjList *)malloc(sizeof(AdjList));
-    CreatGraph(adjacency_list);
+    CreateGraph(adjacency_list);
     TraverseGraph(adjacency_list);
+    return 0;
 }
