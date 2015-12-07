@@ -20,13 +20,32 @@ typedef struct Queue{
     struct QNode * rear;
 }LQueue;
 
-void InitQueue(LQueue * LQ)
+typedef struct ArcNode{
+    int adjvex;         //adjacency vertex
+    int weight;
+    struct ArcNode * next;
+}ArcNode;
+
+typedef struct VertexNode{
+    char vexdata;       //vertex_data
+    ArcNode * head;     //vertex_adjacency
+}VertexNode;
+
+typedef struct{
+    VertexNode vertex[MAXVEX];
+    int vexnum;         //vertex_num
+    int arcnum;         //arc_num
+}AdjList;
+
+int visited[MAXVEX] = {0};
+
+void InitQueue(LQueue ** LQ)
 {
-    LQ = (LQueue *)malloc(sizeof(LQueue));
+    *LQ = (LQueue *)malloc(sizeof(LQueue));
     QNode * p = (QNode *)malloc(sizeof(QNode));
     p->next = NULL;
-    LQ->front = p;
-    LQ->rear = p;
+    (*LQ)->front = p;
+    (*LQ)->rear = p;
 }
 
 void EnterQueue(LQueue * LQ, int v0)
@@ -62,25 +81,6 @@ void DeleteQueue(LQueue * LQ, int * v)
     }
     free(t);
 }
-
-typedef struct ArcNode{
-    int adjvex;         //adjacency vertex
-    int weight;
-    struct ArcNode * next;
-}ArcNode;
-
-typedef struct VertexNode{
-    char vexdata;       //vertex_data
-    ArcNode * head;     //vertex_adjacency
-}VertexNode;
-
-typedef struct{
-    VertexNode vertex[MAXVEX];
-    int vexnum;         //vertex_num
-    int arcnum;         //arc_num
-}AdjList;
-
-int visited[MAXVEX] = {0};
 
 void CreateGraph(AdjList * adjacency_list)
 {
@@ -206,7 +206,7 @@ void BFS(AdjList * adjacency_list, int v0)
     int v, w;
     printf("%c", adjacency_list->vertex[v0].vexdata);
     visited[v0] = 1;
-    InitQueue(Q);
+    InitQueue(&Q);
     EnterQueue(Q, v0);
     while(!Empty(Q)){
         DeleteQueue(Q, &v);
@@ -235,7 +235,7 @@ void TraverseGraph(AdjList * adjacency_list)
         }
     }
     printf("\n");
-    /*for(i = 1; i <= adjacency_list->vexnum; i++){
+    for(i = 1; i <= adjacency_list->vexnum; i++){
         visited[i] = 0;
     }
     printf("BFS:\n");
@@ -244,7 +244,7 @@ void TraverseGraph(AdjList * adjacency_list)
             BFS(adjacency_list, i);
         }
     }
-    printf("\n");*/
+    printf("\n");
 }
 
 int main(void)
